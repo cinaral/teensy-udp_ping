@@ -1,0 +1,44 @@
+{
+	"tasks": [
+		{
+			"type": "PlatformIO",
+			"task": "Build (teensy41)",
+			"problemMatcher": [
+				"$platformio"
+			],
+			"group": "build",
+			"label": "PlatformIO: Build (teensy41)",
+			"dependsOn": [
+                "Clean generated code"
+            ],
+		},
+		{
+			"label": "Clean generated code",
+			"type": "shell",
+			"command": "./scripts/clean_generated_code.sh",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			//"group": "build"
+		},
+		{
+			"label": "Copy to Raspberry Pi",
+			"type": "shell",
+			"command": "./scripts/copy_to_raspberry_pi.sh",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"group": "build"
+		}
+	],
+	"version": "2.0.0",
+	"type": "shell",
+	"presentation": {
+		"echo": true,
+		"clear": true,
+		"reveal": "always",
+		"focus": false,
+		"panel": "shared",
+		"showReuseMessage": false
+	}
+}
