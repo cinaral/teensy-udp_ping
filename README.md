@@ -3,15 +3,18 @@
 	- [1.1. Prepare the Raspberry Pi](#11-prepare-the-raspberry-pi)
 	- [1.2. Optional: Set up to flash Teensy from the Raspberry Pi](#12-optional-set-up-to-flash-teensy-from-the-raspberry-pi)
 	- [1.3. Set up a DHCP server on the Raspberry Pi](#13-set-up-a-dhcp-server-on-the-raspberry-pi)
-	- [1.4. Flash the Teensy](#14-flash-the-teensy)
-	- [1.5. Example](#15-examplehttpsgithubcomssilvermanqnethernetblobmasterexamplesfixedwidthserverfixedwidthserverino)
+	- [1.4. Prepare the Teensy 4.1](#14-prepare-the-teensy-41)
+	- [1.5. Flash the Teensy](#15-flash-the-teensy)
+	- [1.6. Example](#16-examplehttpsgithubcomssilvermanqnethernetblobmasterexamplesfixedwidthserverfixedwidthserverino)
 
-## 1.1. Prepare the Raspberry Pi 
+
 You need:
 - Raspberry Pi 4 B
 - Micro-SD card (min 16 GB)
 - Teensy 4.1
 - Computer with an SD card reader (comp)
+
+## 1.1. Prepare the Raspberry Pi 
 
 1. Download and install [Raspberry Pi Imager](https://www.raspberrypi.com/software/).
 ```bash
@@ -142,8 +145,10 @@ sudo systemctl enable dnsmasq # Run at startup
 sudo systemctl restart dnsmasq
 sudo systemctl status dnsmasq # Look for (Active)
 ```
+## 1.4. Prepare the Teensy 4.1
+1. [Solder](https://www.pjrc.com/store/ethernet_kit.html) the Ethernet kit.
 
-## 1.4. Flash the Teensy
+## 1.5. Flash the Teensy
 1. We will use the [QNEthernet](https://github.com/ssilverman/QNEthernet) library for Teensy 4.1. I use PlatformIO on VS Code to build for the Teensy, and you can simply add QNEthernet to your project via PlatformIO.
 2. Download an [example](https://github.com/ssilverman/QNEthernet/blob/master/examples/FixedWidthServer/FixedWidthServer.ino) program or provide your own program.
 3. Build and copy ```firmware.hex``` to the RaspPi (You could also flash the Teensy from the PlatformIO by connecting it to the computer and stop here):
@@ -159,18 +164,19 @@ scp ./.pio/build/teensy41/firmware.hex pi@192.168.3.14:/home/pi
 /teensy_loader_cli/teensy_loader_cli --mcu=TEENSY41 -s --serial-number=11462940 # use usb-devices to find the SN of the Teensy and identify the Teensy you want to flash
 ```
 
-## 1.5. [Example](https://github.com/ssilverman/QNEthernet/blob/master/examples/FixedWidthServer/FixedWidthServer.ino)
-1. Install netcat on the RaspPi:
+## 1.6. [Example](https://github.com/ssilverman/QNEthernet/blob/master/examples/FixedWidthServer/FixedWidthServer.ino)
+1. Physically connect the RaspPi and the Teensy via the RJ45 ports.
+2. Install netcat on the RaspPi:
 ```bash
 # pi@pi ~ $
 sudo apt install netcat
 ```
-2. Monitor the serial
+3. Monitor the serial:
 ```bash
 # pi@pi ~ $
 cat /dev/ttyACM0 # or whichever port Teensy is connected to
 ```
-3. Send a TCP packet to Teensy's IP and the specified port in the program. 
+4. Send a TCP packet to Teensy's IP and the specified port in the program: 
 ```bash
 # pi@pi ~ $
 nc 192.168.1.41 5000 # replace with your Teensy's IP and port
