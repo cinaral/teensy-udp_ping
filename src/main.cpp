@@ -51,8 +51,9 @@ struct ClientState {
 std::vector<ClientState> clients;
 
 // The server.
-//EthernetServer server{kServerPort};
-EthernetUDP server;
+EthernetServer server{kServerPort};
+//* for UDP:
+//EthernetUDP server; 
 
 // --------------------------------------------------------------------------
 //  Main program
@@ -95,8 +96,9 @@ setup()
 
 		// Start the server
 		printf("Listening for clients on port %u...\n", kServerPort);
-		//server.begin();
-		server.begin(kServerPort);
+		server.begin();
+		//* for UDP:
+		//server.begin(kServerPort);
 	}
 }
 
@@ -116,68 +118,68 @@ processMessage(const ClientState &state)
 void
 loop()
 {
+	//* for UDP:
+	//int packetSize = server.parsePacket();
 
-	int packetSize = server.parsePacket();
-
-	if (packetSize) {
-		Serial.print("Received packet of size ");
-		Serial.println(packetSize);
-		Serial.print("From ");
-		IPAddress remote = server.remoteIP();
-		for (int i = 0; i < 4; i++) {
-			Serial.print(remote[i], DEC);
-			if (i < 3) {
-				Serial.print(".");
-			}
-		}
-		Serial.print(", port ");
-		Serial.println(server.remotePort());
-
-		// read the packet into packetBufffer
-		server.read(packetBuffer, kMessageSize);
-		Serial.println("Contents:");
-		Serial.println(packetBuffer);
-
-		// send a reply to the IP address and port that sent us the packet we
-		// received
-		server.beginPacket(server.remoteIP(), server.remotePort());
-		server.write(ReplyBuffer);
-		server.endPacket();
-	}
-	delay(10);
-	
-	// EthernetClient client = server.accept();
-	// if (client) {
-	//	IPAddress ip = client.remoteIP();
-	//	printf("Client connected: %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
-	//	clients.emplace_back(std::move(client));
-	//	printf("Client count: %u\n", clients.size());
-	// }
-
-	//// Process data from each client
-	// for (ClientState &state : clients) { // Use a reference
-	//	if (!state.client.connected()) {
-	//		state.closed = true;
-	//		continue;
-	//	}
-
-	//	int avail = state.client.available();
-	//	if (avail > 0) {
-	//		int toRead = std::min(kMessageSize - state.bufSize, avail);
-	//		state.bufSize += state.client.read(&state.buf[state.bufSize], toRead);
-	//		if (state.bufSize >= kMessageSize) {
-	//			processMessage(state);
-	//			state.bufSize = 0;
+	//if (packetSize) {
+	//	Serial.print("Received packet of size ");
+	//	Serial.println(packetSize);
+	//	Serial.print("From ");
+	//	IPAddress remote = server.remoteIP();
+	//	for (int i = 0; i < 4; i++) {
+	//		Serial.print(remote[i], DEC);
+	//		if (i < 3) {
+	//			Serial.print(".");
 	//		}
 	//	}
-	//}
+	//	Serial.print(", port ");
+	//	Serial.println(server.remotePort());
 
-	//// Clean up all the closed clients
-	// size_t size = clients.size();
-	// clients.erase(std::remove_if(clients.begin(), clients.end(), [](const auto &state) { return
-	// state.closed; }),
-	//               clients.end());
-	// if (clients.size() != size) {
-	//	printf("Client count: %u\n", clients.size());
-	// }
+	//	// read the packet into packetBufffer
+	//	server.read(packetBuffer, kMessageSize);
+	//	Serial.println("Contents:");
+	//	Serial.println(packetBuffer);
+
+	//	// send a reply to the IP address and port that sent us the packet we
+	//	// received
+	//	server.beginPacket(server.remoteIP(), server.remotePort());
+	//	server.write(ReplyBuffer);
+	//	server.endPacket();
+	//}
+	//delay(10);
+	
+	 EthernetClient client = server.accept();
+	 if (client) {
+		IPAddress ip = client.remoteIP();
+		printf("Client connected: %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+		clients.emplace_back(std::move(client));
+		printf("Client count: %u\n", clients.size());
+	 }
+
+	// Process data from each client
+	 for (ClientState &state : clients) { // Use a reference
+		if (!state.client.connected()) {
+			state.closed = true;
+			continue;
+		}
+
+		int avail = state.client.available();
+		if (avail > 0) {
+			int toRead = std::min(kMessageSize - state.bufSize, avail);
+			state.bufSize += state.client.read(&state.buf[state.bufSize], toRead);
+			if (state.bufSize >= kMessageSize) {
+				processMessage(state);
+				state.bufSize = 0;
+			}
+		}
+	}
+
+	// Clean up all the closed clients
+	 size_t size = clients.size();
+	 clients.erase(std::remove_if(clients.begin(), clients.end(), [](const auto &state) { return
+	 state.closed; }),
+	               clients.end());
+	 if (clients.size() != size) {
+		printf("Client count: %u\n", clients.size());
+	 }
 }
