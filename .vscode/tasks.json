@@ -8,23 +8,11 @@
 			],
 			"group": "build",
 			"label": "PlatformIO: Build (teensy41)",
-			"dependsOn": [
-                "Clean generated code"
-            ],
-		},
-		{
-			"label": "Clean generated code",
-			"type": "shell",
-			"command": "./scripts/clean_generated_code.sh",
-			"options": {
-				"cwd": "${workspaceFolder}"
-			},
-			//"group": "build"
 		},
 		{
 			"label": "Copy to Raspberry Pi",
 			"type": "shell",
-			"command": "./scripts/copy_to_raspberry_pi.sh",
+			"command": "./scripts/copy_to_rasppi.sh",
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
