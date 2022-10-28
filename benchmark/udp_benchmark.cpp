@@ -19,6 +19,7 @@ int elapsed_since(const std::chrono::time_point<std::chrono::high_resolution_clo
 int
 main(int, char const *[])
 {
+	//* start socket
 	std::string hostname{"192.168.1.75"};
 	uint16_t port = 5000;
 
@@ -34,8 +35,8 @@ main(int, char const *[])
 	char msg_recv[msg_size];
 	socklen_t sendsize = sizeof(destination);
 
+	//* benchmark stuff
 	constexpr unsigned int num_of_trials = 100;
-
 	int send_elapsed;
 	int recv_elapsed;
 	int sum_send_elapsed = 0;
@@ -44,19 +45,20 @@ main(int, char const *[])
 	int min_recv_elapsed = 1e6;
 	int max_send_elapsed = 0;
 	int max_recv_elapsed = 0;
+	//*
 
-	for (unsigned int i = 0; i < num_of_trials; ++i) {
+	for (unsigned int i = 0; i < num_of_trials; ++i) { //* benchmark loop
 		{
 			const auto start = std::chrono::high_resolution_clock::now();
-			::sendto(sock, msg_sent, msg_size, 0, reinterpret_cast<sockaddr *>(&destination), sendsize);
+			::sendto(sock, msg_sent, msg_size, 0, reinterpret_cast<sockaddr *>(&destination), sendsize); //* send
 			send_elapsed = elapsed_since(start);
 		}
 		{
 			const auto start = std::chrono::high_resolution_clock::now();
-			::recvfrom(sock, msg_recv, msg_size, 0, reinterpret_cast<sockaddr *>(&destination), &sendsize);
+			::recvfrom(sock, msg_recv, msg_size, 0, reinterpret_cast<sockaddr *>(&destination), &sendsize); //* receive
 			recv_elapsed = elapsed_since(start);
 		}
-
+		//* benchmark stuff
 		sum_send_elapsed += send_elapsed;
 		sum_recv_elapsed += recv_elapsed;
 
@@ -72,13 +74,17 @@ main(int, char const *[])
 		if (recv_elapsed > max_recv_elapsed) {
 			max_recv_elapsed = recv_elapsed;
 		}
+		//*		
 	}
+	//* benchmark stuff
 	std::cout << "send elapsed (us) (min/max/mean): " << min_send_elapsed << " / " << max_send_elapsed << " / "
 		  << static_cast<double>(sum_send_elapsed) / num_of_trials << std::endl;
 	std::cout << "recv elapsed (us) (min/max/mean): " << min_recv_elapsed << " / " << max_recv_elapsed << " / "
 		  << static_cast<double>(sum_recv_elapsed) / num_of_trials << std::endl;
 	std::cout << msg_recv[0] << std::endl;
+	//*
 
+	//* close socket
 	::close(sock);
 
 	return 0;
