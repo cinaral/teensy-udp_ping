@@ -20,7 +20,7 @@ int
 main(int, char const *[])
 {
 	//* start socket
-	std::string hostname{"192.168.1.75"};
+	std::string hostname{"192.168.1.18"};
 	uint16_t port = 5000;
 
 	int sock = socket(AF_INET, SOCK_DGRAM, 0);
