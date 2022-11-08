@@ -133,7 +133,7 @@ sudo touch /etc/network/interfaces.d/temp.conf # you can name it whatever you wa
 sudo echo "auto eth0" >> /etc/network/interfaces.d/temp.conf
 sudo echo "allow-hotplug eth0" >> /etc/network/interfaces.d/temp.conf
 sudo echo "iface eth0 inet static" >> /etc/network/interfaces.d/temp.conf # static IP for the RaspPi ethernet port
-sudo echo "	address 192.168.1.1" >> /etc/network/interfaces.d/temp.conf # can be anything, try to stick to 192.169.x.x
+sudo echo "	address 192.168.1.1" >> /etc/network/interfaces.d/temp.conf # can be anything, try to stick to 192.168.x.x
 ```
 2. restart the network interface
 ```bash
