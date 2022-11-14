@@ -138,7 +138,7 @@ sudo echo "	address 192.168.1.1" >> /etc/network/interfaces.d/temp.conf # can be
 2. restart the network interface
 ```bash
 # pi@pi ~ $
-sudo systemctl restart network-manager
+sudo systemctl restart NetworkManager.service
 ```
 3. Install a DHCP server. I chose dnsmasq for this purpose.
 ```bash
@@ -155,7 +155,7 @@ sudo echo "no-dhcp-interface = wlan0" >> /etc/dnsmasq.d/pi.dns # we won't DHCP w
 sudo echo "domain-needed" >> /etc/dnsmasq.d/pi.dns # prevents packets from leaving the subnet
 sudo echo "bogus-priv" >> /etc/dnsmasq.d/pi.dns # limits DNS to subnet
 sudo echo "domain=pi.lan" >> /etc/dnsmasq.d/pi.dns # you choose the name
-sudo echo dhcp-range=192.168.1.10,192.168.1.100,48h # probably should not include interface address
+sudo echo dhcp-range=192.168.1.10,192.168.1.100,48h >> /etc/dnsmasq.d/pi.dns # probably should not include interface address
 sudo echo "dhcp-option=3,192.168.0.1" >> /etc/dnsmasq.d/pi.dns # sets the default route
 ```
 5. Enable the DHCP server:
