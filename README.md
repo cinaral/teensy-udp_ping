@@ -179,7 +179,7 @@ scp ./.pio/build/teensy41/firmware.hex pi@192.168.3.14:/home/pi
 ```
 
 ### 5.3.6. Example
-1. See this [example program](https://github.com/ssilverman/QNEthernet/blob/master/examples/FixedWidthServer/FixedWidthServer.ino).
+1. We will use the same [example program](https://github.com/ssilverman/QNEthernet/blob/master/examples/FixedWidthServer/FixedWidthServer.ino) from the [previous section](#535-flash-the-teensy).
 1. Physically connect the RaspPi and the Teensy via the RJ45 ports.
 2. Install netcat on the RaspPi:
 ```bash
