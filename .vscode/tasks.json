@@ -2,22 +2,34 @@
 	"tasks": [
 		{
 			"type": "PlatformIO",
-			"task": "Build (teensy41)",
+			"task": "Build",
 			"problemMatcher": [
 				"$platformio"
 			],
 			"group": "build",
-			"label": "PlatformIO: Build (teensy41)",
+			"label": "Build",
 		},
 		{
-			"label": "Copy to Raspberry Pi",
+			"label": "Clear",
 			"type": "shell",
-			"command": "./scripts/copy_to_rasppi.sh",
-			"options": {
-				"cwd": "${workspaceFolder}"
-			},
+			"command": "./scripts/build/clear.sh",
 			"group": "build"
-		}
+		},
+		{
+			"label": "Sync to Raspberry Pi",
+			"type": "shell",
+			"command": "./scripts/sync_to_rasppi.sh",
+			"group": "build",
+			"args": [
+				"beryl@10.66.203.90:/home/beryl/teensy-udp_ping"
+			],
+		},
+		{
+			"label": "Build udp_benchmark.cpp",
+			"type": "shell",
+			"command": "./scripts/build_alt.sh",
+			"group": "build"
+		},
 	],
 	"version": "2.0.0",
 	"type": "shell",
@@ -25,7 +37,7 @@
 		"echo": true,
 		"clear": true,
 		"reveal": "always",
-		"focus": false,
+		"focus": true,
 		"panel": "shared",
 		"showReuseMessage": false
 	}

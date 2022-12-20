@@ -1,7 +1,7 @@
 
 # 1. teensy-udp_ping
 
-This is an example and benchmark project to test communication between Raspberry Pi 4 B and Teensy 4.1 over TCP/UDP. 
+This is a testing and benchmark project to make Raspberry Pi 4 B and Teensy 4.1 communicate over TCP/UDP. This document also outlines the process of preparing the hardware and other prerequisites.
 
 Flash ```src/main.cpp``` to your Teensy 4.1, this project uses PlatformIO and it depends on [QNEthernet](https://github.com/ssilverman/QNEthernet).
 
@@ -10,32 +10,52 @@ You can build ```benchmark/udp_benchmark.cpp```, a simple program to benchmark U
 # 2. Table of Contents
 - [1. teensy-udp_ping](#1-teensy-udpping)
 - [2. Table of Contents](#2-table-of-contents)
-- [3. Complete Guide to Setup Raspberry Pi 4 B to communicate with Teensy 4.1 over TCP/UDP](#3-complete-guide-to-setup-raspberry-pi-4-b-to-communicate-with-teensy-41-over-tcpudp)
-	- [3.1. Summary:](#31-summary)
-	- [3.2. You need:](#32-you-need)
-	- [3.3. Steps:](#33-steps)
-		- [3.3.1. Prepare the Raspberry Pi](#331-prepare-the-raspberry-pi)
-		- [3.3.2. [Optional] Set up to flash Teensy from the Raspberry Pi](#332-optional-set-up-to-flash-teensy-from-the-raspberry-pi)
-		- [3.3.3. Set up a DHCP server on the Raspberry Pi](#333-set-up-a-dhcp-server-on-the-raspberry-pi)
-		- [3.3.4. Prepare the Teensy 4.1](#334-prepare-the-teensy-41)
-		- [3.3.5. Flash the Teensy](#335-flash-the-teensy)
-		- [3.3.6. Example](#336-examplehttpsgithubcomssilvermanqnethernetblobmasterexamplesfixedwidthserverfixedwidthserverino)
+- [3. Quick Start](#3-quick-start)
+- [4. Example](#4-example)
+- [5. Complete Guide to Setup Raspberry Pi 4 B to communicate with Teensy 4.1 over TCP/UDP](#5-complete-guide-to-setup-raspberry-pi-4-b-to-communicate-with-teensy-41-over-tcpudp)
+	- [5.1. Summary](#51-summary)
+	- [5.2. Hardware You Need](#52-hardware-you-need)
+	- [5.3. Installation and Prerequisites](#53-installation-and-prerequisites)
+		- [5.3.1. Prepare the Raspberry Pi](#531-prepare-the-raspberry-pi)
+		- [5.3.3. Set up a DHCP server on the Raspberry Pi](#533-set-up-a-dhcp-server-on-the-raspberry-pi)
+		- [5.3.4. Prepare the Teensy 4.1](#534-prepare-the-teensy-41)
+		- [5.3.5. Flash the Teensy](#535-flash-the-teensy)
+		- [5.3.6. Example](#536-example)
+	- [5.4. [Optional] How flash Teensy from the CLI](#54-optional-how-flash-teensy-from-the-cli)
 
-# 3. Complete Guide to Setup Raspberry Pi 4 B to communicate with Teensy 4.1 over TCP/UDP
+# 3. Quick Start
+1. Compile the firmware for the Teensy 4.1 using VS Code, e.g. ```ctrl + shift + B``` and then select ```PlatformIO: Build (teensy 4.1)```
+2. Sync to the Raspberry Pi using the [sync script](scripts/sync_to_rasppi.sh), see ```Sync to Raspberry Pi``` VS Code task for an example.
+3. Now connect to the Raspberry Pi. From the Raspberry Pi flash the firmware using the [upload script](scripts/teensy_loader_cli/upload.sh).
+4. Build the benchmark executable using the [build script](scripts/build/build.sh).
+5. Run the benchmark executable to benchmark. 
 
-## 3.1. Summary:
+# 4. Example
+```bash
+$ ./udp_benchmark
+
+pinging 10000 times...
+Done. In microseconds (us):
+send elapsed (min/max/mean):        10 /       160 /   12.9498 (includes Teensy receive elapsed)
+recv elapsed (min/max/mean):        35 /       260 /   48.2842 (includes Teensy send elapsed)
+Last received package was: "a3.14159"
+```
+
+# 5. Complete Guide to Setup Raspberry Pi 4 B to communicate with Teensy 4.1 over TCP/UDP
+
+## 5.1. Summary
 1. Install an operating system on the RaspPi, and ```ssh``` into it.
 2. Setup a DHCP server on the RaspPi.
 3. Prepare Teensy 4.1 by soldering the ethernet kit and flashing your program, and connect it to the RaspPi using the RJ45 ports with an ethernet cable.
 
-## 3.2. You need:
+## 5.2. Hardware You Need
 - Raspberry Pi 4 B
 - Micro-SD card (min 16 GB)
 - Teensy 4.1
 - Computer with an SD card reader (comp)
 
-## 3.3. Steps:
-### 3.3.1. Prepare the Raspberry Pi 
+## 5.3. Installation and Prerequisites
+### 5.3.1. Prepare the Raspberry Pi 
 
 1. Download and install [Raspberry Pi Imager](https://www.raspberrypi.com/software/).
 ```bash
@@ -97,33 +117,7 @@ network={
 ssh pi@192.168.3.14 # replace with your RaspPi user name and IPv4 address
 ```
 
-### 3.3.2. [Optional] Set up to flash Teensy from the Raspberry Pi
-
-1. Add Teensy rules:
-```bash
-# pi@pi ~ $
-wget https://www.pjrc.com/teensy/00-teensy.rules
-sudo mv 00-teensy.rules /etc/udev/rules.d/00-teensy.rules 
-```
-
-2. Install libusb-dev:
-```bash
-# pi@pi ~ $
-sudo apt install libusb-dev
-```
-
-3. Install and build teensy_loader_cli
-```bash
-pi@pi ~ $
-git clone https://github.com/PaulStoffregen/teensy_loader_cli
-cd teensy_loader_cli
-git remote add serial_number https://github.com/hmaarrfk/teensy_loader_cli # add serial_number feature to teensy_loader_cli, useful for multiple Teensy's (Not part of the master as of 2022-10-21) 
-git fetch serial_number
-git cherry-pick 93781a0dd9f7060b7bb5efaac99c977bbf768711
-make # build
-```
-
-### 3.3.3. Set up a DHCP server on the Raspberry Pi 
+### 5.3.3. Set up a DHCP server on the Raspberry Pi 
 For this part you need to ssh into the RaspPi as explained in the previous section. We need a DHCP server for the Teensy to be assigned an IP address on the subnet. We will not connect Teensy to the internet, instead we are creating a subnet that includes only the RaspPi and the Teensy.
 
 1. Setup the ethernet interface:
@@ -165,10 +159,10 @@ sudo systemctl enable dnsmasq # Run at startup
 sudo systemctl restart dnsmasq
 sudo systemctl status dnsmasq # Confirm DHCP service is running, look for (Active)
 ```
-### 3.3.4. Prepare the Teensy 4.1
+### 5.3.4. Prepare the Teensy 4.1
 1. [Solder](https://www.pjrc.com/store/ethernet_kit.html) the Ethernet kit.
 
-### 3.3.5. Flash the Teensy
+### 5.3.5. Flash the Teensy
 1. We will use the [QNEthernet](https://github.com/ssilverman/QNEthernet) library for Teensy 4.1. I use PlatformIO on VS Code to build for the Teensy, and you can simply add QNEthernet to your project via PlatformIO.
 2. Download an [example](https://github.com/ssilverman/QNEthernet/blob/master/examples/FixedWidthServer/FixedWidthServer.ino) program or provide your own program.
 3. Build and copy ```firmware.hex``` to the RaspPi (You could also flash the Teensy from the PlatformIO by connecting it to the computer and stop here):
@@ -184,7 +178,8 @@ scp ./.pio/build/teensy41/firmware.hex pi@192.168.3.14:/home/pi
 /teensy_loader_cli/teensy_loader_cli --mcu=TEENSY41 -s --serial-number=11462940 # use usb-devices to find the SN of the Teensy and identify the Teensy you want to flash
 ```
 
-### 3.3.6. [Example](https://github.com/ssilverman/QNEthernet/blob/master/examples/FixedWidthServer/FixedWidthServer.ino)
+### 5.3.6. Example
+1. See this [example program](https://github.com/ssilverman/QNEthernet/blob/master/examples/FixedWidthServer/FixedWidthServer.ino).
 1. Physically connect the RaspPi and the Teensy via the RJ45 ports.
 2. Install netcat on the RaspPi:
 ```bash
@@ -202,3 +197,32 @@ cat /dev/ttyACM0 # or whichever port Teensy is connected to
 nc 192.168.1.41 5000 # replace with your Teensy's IP and port
 helloworld # fixed-width example is fixed-width
 ```
+
+## 5.4. [Optional] How flash Teensy from the CLI
+
+You can use the Raspberry Pi on the local network to flash Teensy's remotely. For usage see [upload_to_TEENSY41.sh](./scripts/upload_to_TEENSY41.sh).
+
+1. Add Teensy rules:
+```bash
+# pi@pi ~ $
+wget https://www.pjrc.com/teensy/00-teensy.rules
+sudo mv 00-teensy.rules /etc/udev/rules.d/00-teensy.rules 
+```
+
+2. Install libusb-dev:
+```bash
+# pi@pi ~ $
+sudo apt install libusb-dev
+```
+
+3. Install and build teensy_loader_cli
+```bash
+pi@pi ~ $
+git clone https://github.com/PaulStoffregen/teensy_loader_cli
+cd teensy_loader_cli
+git remote add serial_number https://github.com/hmaarrfk/teensy_loader_cli # add serial_number feature to teensy_loader_cli, useful for multiple Teensy's (Not part of the master as of 2022-10-21) 
+git fetch serial_number
+git cherry-pick 93781a0dd9f7060b7bb5efaac99c977bbf768711
+make # build
+```
+
