@@ -1,6 +1,8 @@
 
 # 1. teensy-udp_ping
 
+**WARNING**: Do not use this library for your projects. This functionality is now part of [udp_msg](https://github.com/cinaral/udp_msg),  a slightly more refined library that is intended to make communicating between computers and Teensy easier.
+
 This is a testing and benchmark project to make Raspberry Pi 4 B and Teensy 4.1 communicate over TCP/UDP. This document also outlines the process of preparing the hardware and other prerequisites.
 
 Flash ```src/main.cpp``` to your Teensy 4.1, this project uses PlatformIO and it depends on [QNEthernet](https://github.com/ssilverman/QNEthernet).
